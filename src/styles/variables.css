@@ -1,0 +1,96 @@
+:root {
+  --neon-blue: #00f3ff;
+  --neon-purple: #bd00ff;
+  --bg-dark: #0a0a0a;
+  --bg-darker: #050505;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-hover: rgba(255, 255, 255, 0.1);
+  --text-main: #e0e0e0;
+  --text-muted: #a0a0a0;
+  --primary-glow: 0 0 10px rgba(0, 243, 255, 0.5);
+  --secondary-glow: 0 0 10px rgba(189, 0, 255, 0.5);
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.light-mode {
+  --bg-dark: #eef2f6;
+  --bg-darker: #ffffff;
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --glass-hover: rgba(0, 0, 0, 0.05);
+  --text-main: #1a1a1a;
+  --text-muted: #555555;
+  --neon-blue: #0077b6;
+  --neon-purple: #7209b7;
+  --primary-glow: 0 0 15px rgba(0, 119, 182, 0.2);
+  --secondary-glow: 0 0 15px rgba(114, 9, 183, 0.2);
+  --logoloop-fadeColor: #eef2f6;
+}
+
+/* Light mode text visibility overrides */
+body.light-mode h1,
+body.light-mode h2,
+body.light-mode h3,
+body.light-mode h4,
+body.light-mode h5,
+body.light-mode h6,
+body.light-mode .section-title,
+body.light-mode .project-title,
+body.light-mode .timeline-title,
+body.light-mode .skill-category-title,
+body.light-mode .hero-title,
+body.light-mode .hero-description {
+  color: var(--text-main);
+}
+
+body.light-mode .hero-subtitle {
+  color: var(--neon-blue);
+}
+
+body.light-mode .project-desc,
+body.light-mode .timeline-desc,
+body.light-mode .timeline-year,
+body.light-mode .typing-effect {
+  color: var(--text-muted);
+}
+
+body.light-mode .navbar.scrolled {
+  background: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+body.light-mode .glass-card {
+  background: var(--bg-darker);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+body.light-mode .tab-btn {
+  color: var(--text-muted);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .tab-btn.active {
+  color: #fff;
+  background: var(--neon-blue);
+}
+
+body.light-mode .secondary-btn {
+  color: var(--text-main);
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+body.light-mode .secondary-btn:hover {
+  color: var(--neon-blue);
+  border-color: var(--neon-blue);
+  background: rgba(0, 119, 182, 0.05);
+}
