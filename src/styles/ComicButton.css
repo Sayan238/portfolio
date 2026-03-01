@@ -1,0 +1,34 @@
+/* src/styles/ComicButton.css */
+.comic-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    padding: 1rem 2.5rem;
+    font-size: 1.3rem;
+    font-family: var(--font-comic);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-dark);
+    /* By default buttons use the main comic colors as the background */
+    background: var(--btn-color, #fff);
+    border: var(--border-thick);
+    cursor: pointer;
+    text-decoration: none;
+    position: relative;
+    /* initial shadow handled by framer motion inline style, but fallback here */
+    box-shadow: 8px 8px 0px #000;
+    transform: rotate(-2deg);
+    transition: transform 0.1s ease;
+}
+
+body.light-mode .comic-button {
+    background: #fff;
+    color: #000;
+}
+
+/* Force icons inside comic buttons to be thick */
+.comic-button svg {
+    stroke-width: 2px;
+}

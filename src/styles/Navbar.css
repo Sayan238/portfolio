@@ -1,7 +1,7 @@
 /* src/styles/Navbar.css */
 .navbar {
     background: transparent;
-    height: 80px;
+    height: 90px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -11,33 +11,35 @@
     width: 100%;
     transition: all 0.3s ease;
     z-index: 999;
+    border-bottom: var(--border-thick);
 }
 
 .navbar.scrolled {
-    background: rgba(10, 10, 10, 0.8);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--comic-blue);
+    /* Remove blur, make it solid flat color like a comic panel */
+    box-shadow: 0 8px 0px #000;
+    border-bottom: var(--border-thick);
 }
 
 .navbar-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 80px;
+    height: 100%;
     width: 100%;
 }
 
 .logo {
-    color: var(--text-main);
-    font-weight: bold;
-    font-size: 1.5rem;
-    letter-spacing: 2px;
+    color: #FFF;
+    font-family: var(--font-comic);
+    font-size: 2.2rem;
+    letter-spacing: 3px;
+    -webkit-text-stroke: 2px #000;
+    text-shadow: 4px 4px 0 #000;
 }
 
 .logo-accent {
-    color: var(--neon-blue);
+    color: var(--comic-yellow);
 }
 
 .nav-menu {
@@ -48,7 +50,7 @@
 }
 
 .nav-item {
-    height: 80px;
+    height: 100%;
 }
 
 .nav-links {
@@ -59,30 +61,36 @@
     padding: 0 1rem;
     height: 100%;
     cursor: pointer;
-    font-size: 1rem;
-    transition: all 0.3s ease;
+    font-family: var(--font-comic);
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    -webkit-text-stroke: 1px #000;
 }
 
 .nav-links:hover {
-    color: var(--neon-blue);
-    text-shadow: 0 0 10px var(--primary-glow);
+    color: var(--comic-yellow);
+    transform: translateY(-4px);
+    text-shadow: 4px 4px 0 #000;
 }
 
 .nav-links-btn {
-    padding: 8px 20px;
-    border-radius: 4px;
-    background: transparent;
-    color: var(--neon-blue);
-    border: 1px solid var(--neon-blue);
-    transition: all 0.3s ease;
+    padding: 10px 24px;
+    background: var(--comic-red);
+    color: #fff;
+    border: var(--border-thick);
+    transition: all 0.2s ease;
     margin-left: 20px;
-    font-size: 0.9rem;
+    font-family: var(--font-comic);
+    font-size: 1.2rem;
+    box-shadow: 4px 4px 0 #000;
 }
 
 .nav-links-btn:hover {
-    background: var(--neon-blue);
+    background: var(--comic-yellow);
     color: #000;
-    box-shadow: 0 0 10px var(--neon-blue);
+    transform: translate(-2px, -2px);
+    box-shadow: 8px 8px 0 #000;
 }
 
 /* Theme Toggle Button */
@@ -132,9 +140,9 @@
         left: -100%;
         opacity: 1;
         transition: all 0.5s ease;
-        background: var(--bg-dark);
-        backdrop-filter: blur(10px);
-        border-top: 1px solid var(--glass-border);
+        background: #FFF;
+        border-top: var(--border-thick);
+        border-bottom: var(--border-thick);
     }
 
     .nav-menu.active {
@@ -149,11 +157,13 @@
         padding: 2rem;
         width: 100%;
         display: table;
+        font-size: 1.5rem;
     }
 
     .nav-links:hover {
-        color: var(--neon-blue);
+        color: var(--comic-red);
         transform: scale(1.1);
+        text-shadow: 4px 4px 0 #000;
     }
 
     .menu-icon {

@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Navbar from './components/Navbar';
-import ParticleBackground from './components/ParticleBackground';
 import Hero from './components/Hero';
 import About from './components/About';
 import Skills from './components/Skills';
@@ -24,9 +23,28 @@ const techLogos = [
 ];
 
 function App() {
+
+  // Custom Parallax Mouse Tracker
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      // Calculate normalized mouse position from -1 to 1
+      const x = (e.clientX / window.innerWidth - 0.5) * 2;
+      const y = (e.clientY / window.innerHeight - 0.5) * 2;
+
+      // Update global CSS variables for the background parallax
+      document.documentElement.style.setProperty('--mouse-x', `${x}`);
+      document.documentElement.style.setProperty('--mouse-y', `${y}`);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   return (
-    <div className="app-container">
-      <ParticleBackground />
+    <div className="app-container comic-cursor">
+      {/* Dynamic Background Parallax Layer */}
+      <div className="spider-parallax-bg"></div>
+
       <Navbar />
       <Hero />
       <About />

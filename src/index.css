@@ -10,19 +10,44 @@
 body {
   background-color: var(--bg-dark);
   color: var(--text-main);
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-primary, 'Inter', system-ui, sans-serif);
   min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Custom Comic Scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+  background: var(--bg-darker);
+  border-left: var(--border-thick);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--comic-red);
+  border: var(--border-thick);
+  border-radius: 0px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--comic-yellow);
+}
+
+/* Custom Selection */
+::selection {
+  background: var(--comic-yellow);
+  color: #000;
 }
 
 a {
-  color: var(--neon-blue);
+  color: var(--comic-yellow);
   text-decoration: none;
-  transition: all 0.3s ease;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  font-weight: 800;
 }
 
 a:hover {
-  color: var(--neon-purple);
-  text-shadow: var(--secondary-glow);
+  text-shadow: 2px 2px 0 var(--comic-red), -2px -2px 0 var(--comic-blue);
+  transform: translateY(-2px);
 }
 
 h1,
@@ -31,55 +56,105 @@ h3,
 h4,
 h5,
 h6 {
-  color: white;
+  color: var(--text-main);
   margin-bottom: 1rem;
+  font-family: var(--font-comic);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  -webkit-text-stroke: 2px #000;
+  text-shadow: 4px 4px 0px #000;
 }
 
 p {
   line-height: 1.6;
   margin-bottom: 1rem;
+  font-weight: 600;
+  font-family: var(--font-primary);
 }
 
-.glass-card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
-  border-radius: 16px;
-  padding: 2rem;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+/* Neo-Brutalist Comic Card Base */
+.comic-card {
+  background: var(--bg-surface);
+  border: var(--border-thick);
+  padding: 2.5rem;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: var(--shadow-hard-black);
   position: relative;
   overflow: hidden;
+  z-index: 1;
 }
 
-.glass-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0, 243, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.3);
-  background: var(--glass-hover);
+.comic-card:hover {
+  transform: translate(-4px, -4px);
+  box-shadow: 12px 12px 0px #000;
 }
 
-/* Add a subtle shine effect on hover */
-.glass-card::after {
-  content: "";
+/* Halftone and Web overlay inside cards for extra comic feel */
+.comic-card::before {
+  content: '';
   position: absolute;
   top: 0;
-  left: -100%;
-  width: 50%;
+  left: 0;
+  width: 100%;
   height: 100%;
-  background: linear-gradient(to right,
-      transparent,
-      rgba(255, 255, 255, 0.1),
-      transparent);
-  transform: skewX(-25deg);
-  transition: 0.5s;
+  background-image: var(--spider-web-pattern), var(--halftone-pattern);
+  background-size: 120px 120px, 6px 6px;
+  opacity: 0.15;
+  z-index: -1;
   pointer-events: none;
 }
 
-.glass-card:hover::after {
-  left: 150%;
-  transition: 0.7s ease-in-out;
+/* Interactive Spider-Web and Halftone Parallax Background */
+.spider-parallax-bg {
+  position: fixed;
+  top: -10vw;
+  left: -10vw;
+  width: 120vw;
+  height: 120vh;
+  background-image: var(--spider-web-pattern), var(--halftone-pattern-dark);
+  background-size: 240px 240px, 8px 8px;
+  background-position: center center;
+  z-index: -2;
+  opacity: 0.4;
+  pointer-events: none;
+  /* Opposite translation of mouse coordinates for parallax depth */
+  transform: translate(calc(var(--mouse-x, 0) * -30px), calc(var(--mouse-y, 0) * -30px));
+  transition: transform 0.1s ease-out;
+  /* Smooth easing to remove jitter */
+}
+
+/* Custom Geometric Comic Crosshair */
+.comic-cursor,
+.comic-cursor * {
+  cursor: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 0h2v10h-2zM11 14h2v10h-2zM0 11h10v2h-10zM14 11h10v2h-10z' fill='%23FF0033'/%3E%3Ccircle cx='12' cy='12' r='2' fill='%2300F3FF'/%3E%3C/svg%3E") 12 12, crosshair !important;
+}
+
+/* Legacy Glass Card override to transition safely */
+.glass-card {
+  background: var(--bg-surface);
+  border: var(--border-thick);
+  padding: 2.5rem;
+  box-shadow: var(--shadow-hard-black);
+  position: relative;
+  z-index: 1;
+}
+
+/* Comic Panel Asymmetry */
+.comic-panel-tilt-1 {
+  transform: rotate(-1.5deg);
+}
+
+.comic-panel-tilt-2 {
+  transform: rotate(1.5deg);
+}
+
+.comic-panel-tilt-3 {
+  transform: rotate(-0.5deg);
+}
+
+.comic-panel-tilt-4 {
+  transform: rotate(2deg);
 }
 
 .section {

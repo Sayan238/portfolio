@@ -1,96 +1,168 @@
 :root {
-  --neon-blue: #00f3ff;
-  --neon-purple: #bd00ff;
-  --bg-dark: #0a0a0a;
-  --bg-darker: #050505;
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-hover: rgba(255, 255, 255, 0.1);
-  --text-main: #e0e0e0;
-  --text-muted: #a0a0a0;
-  --primary-glow: 0 0 10px rgba(0, 243, 255, 0.5);
-  --secondary-glow: 0 0 10px rgba(189, 0, 255, 0.5);
+  /* Vibrant Pop-Art Comic Colors */
+  --comic-red: #FF3B30;
+  --comic-blue: #00E5FF;
+  --comic-yellow: #FFDD00;
+  --comic-purple: #B200FF;
+
+  /* Light Base Theme */
+  --bg-dark: #FDF9F1;
+  --bg-darker: #F4EEDF;
+  --bg-surface: #FFFFFF;
+
+  /* Exaggerated Cartoon Lines & Shadows */
+  --border-thick: 4px solid #000;
+  --border-light: 4px solid #fff;
+
+  /* Pure solid offset shadows, no blur, much larger */
+  --shadow-red: 6px 6px 0px var(--comic-red), 8px 8px 0px #000;
+  --shadow-blue: -6px 6px 0px var(--comic-blue), -8px 8px 0px #000;
+  --shadow-yellow: 6px -6px 0px var(--comic-yellow), 8px -4px 0px #000;
+  --shadow-purple: -6px -6px 0px var(--comic-purple), -8px -4px 0px #000;
+
+  --shadow-hard-black: 8px 8px 0px #000;
+  --shadow-hard-white: 6px 6px 0px #fff;
+
+  /* Text */
+  --text-main: #000000;
+  --text-muted: #555555;
+  --text-dark: #000000;
+
+  /* Fonts */
+  --font-primary: 'Outfit', system-ui, sans-serif;
+  --font-comic: 'Bungee', cursive;
+
+  /* Patterns (Bigger dots for obvious comic print style) */
+  --halftone-pattern: radial-gradient(circle, #000 2px, transparent 2.5px);
+  --halftone-pattern-dark: radial-gradient(circle, #000 1.5px, transparent 2px);
+  --spider-web-pattern: none;
 }
 
 body {
   background-color: var(--bg-dark);
   color: var(--text-main);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-primary);
   margin: 0;
   overflow-x: hidden;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.4s ease, color 0.4s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* Thick Cartoon Halftone Background overlay */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image: var(--halftone-pattern-dark);
+  background-size: 16px 16px;
+  z-index: -2;
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+/* Snappy Comic Animations */
+@keyframes comic-pop {
+  0% {
+    transform: scale(0.8) translateZ(0);
+    opacity: 0;
+  }
+
+  60% {
+    transform: scale(1.1) translateZ(0);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1) translateZ(0);
+    opacity: 1;
+  }
+}
+
+@keyframes rgb-split {
+  0% {
+    text-shadow: 2px 2px 0 var(--comic-red), -2px -2px 0 var(--comic-blue);
+  }
+
+  50% {
+    text-shadow: -2px 2px 0 var(--comic-red), 2px -2px 0 var(--comic-blue);
+  }
+
+  100% {
+    text-shadow: 2px 2px 0 var(--comic-red), -2px -2px 0 var(--comic-blue);
+  }
+}
+
+/* Multiverse Glitch Effect */
+@keyframes multiverse-glitch {
+  0% {
+    text-shadow: 4px 4px 0 var(--comic-red), -4px -4px 0 var(--comic-blue);
+    transform: skew(0deg);
+  }
+
+  20% {
+    text-shadow: -4px 4px 0 var(--comic-red), 4px -4px 0 var(--comic-blue);
+    transform: skew(-5deg) translate(-2px, 2px);
+  }
+
+  40% {
+    text-shadow: 6px -2px 0 var(--comic-yellow), -6px 2px 0 var(--comic-purple);
+    transform: skew(5deg) translate(2px, -2px);
+  }
+
+  60% {
+    text-shadow: -2px -2px 0 var(--comic-red), 2px 2px 0 var(--comic-blue);
+    transform: skew(0deg) translate(0, 0);
+  }
+
+  80% {
+    text-shadow: 4px 2px 0 var(--comic-red), -4px -2px 0 var(--comic-blue);
+    transform: skew(-2deg) translate(1px, -1px);
+  }
+
+  100% {
+    text-shadow: 4px 4px 0 var(--comic-red), -4px -4px 0 var(--comic-blue);
+    transform: skew(0deg);
+  }
+}
+
+.glitch {
+  animation: multiverse-glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+  animation-delay: calc(var(--glitch-delay, 0) * 1s);
+  display: inline-block;
+}
+
+.glitch-hover:hover {
+  animation: multiverse-glitch 0.2s linear infinite;
+}
+
+.animate-pop {
+  animation: comic-pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Light mode overrides */
 body.light-mode {
-  --bg-dark: #eef2f6;
-  --bg-darker: #ffffff;
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(0, 0, 0, 0.1);
-  --glass-hover: rgba(0, 0, 0, 0.05);
-  --text-main: #1a1a1a;
-  --text-muted: #555555;
-  --neon-blue: #0077b6;
-  --neon-purple: #7209b7;
-  --primary-glow: 0 0 15px rgba(0, 119, 182, 0.2);
-  --secondary-glow: 0 0 15px rgba(114, 9, 183, 0.2);
-  --logoloop-fadeColor: #eef2f6;
+  --bg-dark: #ffffff;
+  --bg-darker: #f0f0f5;
+  --bg-surface: #ffde00;
+
+  --text-main: #000000;
+  --text-muted: #555566;
+
+  --halftone-pattern-dark: radial-gradient(circle, #d0d0d5 1.5px, transparent 1.5px);
 }
 
-/* Light mode text visibility overrides */
+body.light-mode .section-title,
 body.light-mode h1,
 body.light-mode h2,
-body.light-mode h3,
-body.light-mode h4,
-body.light-mode h5,
-body.light-mode h6,
-body.light-mode .section-title,
-body.light-mode .project-title,
-body.light-mode .timeline-title,
-body.light-mode .skill-category-title,
-body.light-mode .hero-title,
-body.light-mode .hero-description {
-  color: var(--text-main);
+body.light-mode h3 {
+  color: var(--text-dark);
+  text-shadow: 3px 3px 0px #fff, 6px 6px 0px var(--comic-red);
 }
 
-body.light-mode .hero-subtitle {
-  color: var(--neon-blue);
-}
-
-body.light-mode .project-desc,
-body.light-mode .timeline-desc,
-body.light-mode .timeline-year,
-body.light-mode .typing-effect {
-  color: var(--text-muted);
-}
-
-body.light-mode .navbar.scrolled {
-  background: rgba(255, 255, 255, 0.9);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-body.light-mode .glass-card {
-  background: var(--bg-darker);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-body.light-mode .tab-btn {
-  color: var(--text-muted);
-  border-color: rgba(0, 0, 0, 0.1);
-}
-
-body.light-mode .tab-btn.active {
-  color: #fff;
-  background: var(--neon-blue);
-}
-
-body.light-mode .secondary-btn {
-  color: var(--text-main);
-  border-color: rgba(0, 0, 0, 0.2);
-}
-
-body.light-mode .secondary-btn:hover {
-  color: var(--neon-blue);
-  border-color: var(--neon-blue);
-  background: rgba(0, 119, 182, 0.05);
+body.light-mode::before {
+  opacity: 1;
 }
