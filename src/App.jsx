@@ -4,6 +4,7 @@ import Hero from './components/Hero';
 import About from './components/About';
 import Skills from './components/Skills';
 import Projects from './components/Projects';
+import Certifications from './components/Certifications';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import LogoLoop from './components/LogoLoop';
@@ -49,6 +50,7 @@ function App() {
       <Hero />
       <About />
       <Skills />
+      <Certifications />
       <div style={{ height: '150px', position: 'relative', overflow: 'hidden', margin: '2rem 0', maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)' }}>
         <LogoLoop
           logos={techLogos}

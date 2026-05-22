@@ -19,6 +19,7 @@
     "@splinetool/runtime": "^1.12.61",
     "framer-motion": "^12.34.0",
     "lenis": "^1.3.17",
+    "ogl": "^1.0.11",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-icons": "^5.5.0",
