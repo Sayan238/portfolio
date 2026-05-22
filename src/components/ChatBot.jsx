@@ -208,9 +208,41 @@ const ChatBot = () => {
                 const result = await chat.sendMessage(userMessage);
                 responseText = await result.response.text();
             } else {
-                // Fallback mock responses
-                await new Promise(resolve => setTimeout(resolve, 800));
-                responseText = getMockResponse(userMessage);
+                // No local keys, attempt to fetch from Vercel Serverless Function Proxy (/api/chat)
+                try {
+                    const chatHistory = messages
+                        .filter(m => m.sender === 'user' || m.sender === 'bot')
+                        .map(m => ({
+                            role: m.sender === 'user' ? 'user' : 'assistant',
+                            content: m.text
+                        }));
+
+                    const response = await fetch('/api/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            provider: 'groq',
+                            systemInstruction: SYSTEM_INSTRUCTION,
+                            messages: chatHistory,
+                            userMessage: userMessage
+                        })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        responseText = data.content;
+                    } else {
+                        // Proxy returned error (e.g. backend key is not configured yet)
+                        console.warn("Backend proxy returned error, falling back to mock responses.");
+                        responseText = getMockResponse(userMessage);
+                    }
+                } catch (proxyError) {
+                    // Backend proxy is unreachable (e.g. on local Vite dev or GitHub Pages)
+                    console.warn("Backend proxy unreachable, falling back to mock responses:", proxyError);
+                    responseText = getMockResponse(userMessage);
+                }
             }
 
             setMessages(prev => [...prev, { sender: 'bot', text: responseText }]);
