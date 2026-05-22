@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
-import { FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { FaTimes } from 'react-icons/fa';
 import ComicCard from './ComicCard';
 import '../styles/Certifications.css';
 
@@ -117,15 +117,6 @@ const TiltCard = ({ cert, onClick }) => {
 
 const Certifications = () => {
     const [selectedCert, setSelectedCert] = useState(null);
-    const scrollContainerRef = useRef(null);
-
-    const scroll = (direction) => {
-        if (scrollContainerRef.current) {
-            const container = scrollContainerRef.current;
-            const scrollAmount = direction === 'left' ? -300 : 300;
-            container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-        }
-    };
 
     // Prevent body scroll when modal is open
     useEffect(() => {
@@ -158,31 +149,20 @@ const Certifications = () => {
                     </motion.h2>
                 </div>
 
-                {/* Scroll Wrapper to position absolute arrows */}
-                <div className="cert-scroll-wrapper" style={{ position: 'relative', width: '100%' }}>
-                    {/* Scroll Buttons - Left & Right */}
-                    <button className="cert-scroll-btn prev" onClick={() => scroll('left')} aria-label="Scroll left">
-                        <FaChevronLeft />
-                    </button>
-                    <button className="cert-scroll-btn next" onClick={() => scroll('right')} aria-label="Scroll right">
-                        <FaChevronRight />
-                    </button>
-
-                    {/* Horizontal Scrolling Container */}
-                    <div className="cert-horizontal-scroll" ref={scrollContainerRef}>
-                        {certificationsData.map((cert, index) => (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, x: 100, scale: 0.9 }}
-                                whileInView={{ opacity: 1, x: 0, scale: 1 }}
-                                transition={{ delay: index * 0.1, type: 'spring', bounce: 0.4, duration: 0.8 }}
-                                viewport={{ once: true, margin: "-50px" }}
-                                className="cert-card-container"
-                            >
-                                <TiltCard cert={cert} onClick={setSelectedCert} />
-                            </motion.div>
-                        ))}
-                    </div>
+                {/* Horizontal Scrolling Container */}
+                <div className="cert-horizontal-scroll">
+                    {certificationsData.map((cert, index) => (
+                        <motion.div
+                            key={index}
+                            initial={{ opacity: 0, x: 100, scale: 0.9 }}
+                            whileInView={{ opacity: 1, x: 0, scale: 1 }}
+                            transition={{ delay: index * 0.1, type: 'spring', bounce: 0.4, duration: 0.8 }}
+                            viewport={{ once: true, margin: "-50px" }}
+                            className="cert-card-container"
+                        >
+                            <TiltCard cert={cert} onClick={setSelectedCert} />
+                        </motion.div>
+                    ))}
                 </div>
             </div>
 

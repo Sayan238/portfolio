@@ -73,7 +73,13 @@ const ChatBot = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     const messagesEndRef = useRef(null);
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    
+    // API Keys configuration
+    const geminiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    const groqKey = import.meta.env.VITE_GROQ_API_KEY;
+    const grokKey = import.meta.env.VITE_GROK_API_KEY;
+    
+    const hasApiKey = geminiKey || groqKey || grokKey;
 
     // Auto scroll to bottom when new messages arrive
     useEffect(() => {
@@ -84,10 +90,10 @@ const ChatBot = () => {
 
     // Check if API key is present, if not add system notice once
     useEffect(() => {
-        if (isOpen && !apiKey && messages.length === 1) {
+        if (isOpen && !hasApiKey && messages.length === 1) {
             setMessages(prev => [
                 ...prev,
-                { sender: 'system', text: "Notice: Bot running in offline mode. Add 'VITE_GEMINI_API_KEY' to enable full dynamic AI." }
+                { sender: 'system', text: "Notice: Bot running in offline mode. Add 'VITE_GROQ_API_KEY' or 'VITE_GEMINI_API_KEY' to enable full dynamic AI." }
             ]);
         }
     }, [isOpen]);
@@ -103,15 +109,85 @@ const ChatBot = () => {
 
         try {
             let responseText = '';
-            if (apiKey) {
-                const genAI = new GoogleGenerativeAI(apiKey);
+            
+            if (groqKey) {
+                // Call Groq API via OpenAI-compatible endpoint
+                const chatHistory = messages
+                    .filter(m => m.sender === 'user' || m.sender === 'bot')
+                    .map(m => ({
+                        role: m.sender === 'user' ? 'user' : 'assistant',
+                        content: m.text
+                    }));
+
+                const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${groqKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'llama-3.3-70b-versatile',
+                        messages: [
+                            { role: 'system', content: SYSTEM_INSTRUCTION },
+                            ...chatHistory,
+                            { role: 'user', content: userMessage }
+                        ],
+                        temperature: 0.7,
+                        max_tokens: 512
+                    })
+                });
+
+                if (!response.ok) {
+                    const err = await response.json().catch(() => ({}));
+                    throw new Error(err.error?.message || `HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+                responseText = data.choices[0].message.content;
+
+            } else if (grokKey) {
+                // Call Grok (xAI) API via OpenAI-compatible endpoint
+                const chatHistory = messages
+                    .filter(m => m.sender === 'user' || m.sender === 'bot')
+                    .map(m => ({
+                        role: m.sender === 'user' ? 'user' : 'assistant',
+                        content: m.text
+                    }));
+
+                const response = await fetch('https://api.x.ai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${grokKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'grok-beta',
+                        messages: [
+                            { role: 'system', content: SYSTEM_INSTRUCTION },
+                            ...chatHistory,
+                            { role: 'user', content: userMessage }
+                        ],
+                        temperature: 0.7,
+                        max_tokens: 512
+                    })
+                });
+
+                if (!response.ok) {
+                    const err = await response.json().catch(() => ({}));
+                    throw new Error(err.error?.message || `HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+                responseText = data.choices[0].message.content;
+
+            } else if (geminiKey) {
+                // Call Gemini API via SDK
+                const genAI = new GoogleGenerativeAI(geminiKey);
                 const model = genAI.getGenerativeModel({
                     model: "gemini-1.5-flash",
                     systemInstruction: SYSTEM_INSTRUCTION
                 });
 
-                // Prepare conversation history for the API
-                // Keep only user and bot messages for history to avoid format errors
                 const chatHistory = messages
                     .filter(m => m.sender === 'user' || m.sender === 'bot')
                     .map(m => ({
@@ -126,7 +202,7 @@ const ChatBot = () => {
                 const result = await chat.sendMessage(userMessage);
                 responseText = await result.response.text();
             } else {
-                // Wait to simulate thinking
+                // Fallback mock responses
                 await new Promise(resolve => setTimeout(resolve, 800));
                 responseText = getMockResponse(userMessage);
             }
