@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
-import { FaTimes } from 'react-icons/fa';
+import { FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import ComicCard from './ComicCard';
 import '../styles/Certifications.css';
 
@@ -117,6 +117,15 @@ const TiltCard = ({ cert, onClick }) => {
 
 const Certifications = () => {
     const [selectedCert, setSelectedCert] = useState(null);
+    const scrollRef = useRef(null);
+
+    const scroll = (direction) => {
+        if (scrollRef.current) {
+            const cardWidth = 320 + 40; // width + gap
+            const scrollAmount = direction === 'left' ? -cardWidth : cardWidth;
+            scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        }
+    };
 
     // Prevent body scroll when modal is open
     useEffect(() => {
@@ -149,20 +158,30 @@ const Certifications = () => {
                     </motion.h2>
                 </div>
 
-                {/* Horizontal Scrolling Container */}
-                <div className="cert-horizontal-scroll">
-                    {certificationsData.map((cert, index) => (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, x: 100, scale: 0.9 }}
-                            whileInView={{ opacity: 1, x: 0, scale: 1 }}
-                            transition={{ delay: index * 0.1, type: 'spring', bounce: 0.4, duration: 0.8 }}
-                            viewport={{ once: true, margin: "-50px" }}
-                            className="cert-card-container"
-                        >
-                            <TiltCard cert={cert} onClick={setSelectedCert} />
-                        </motion.div>
-                    ))}
+                <div className="cert-carousel-wrapper">
+                    <button className="cert-scroll-btn prev" onClick={() => scroll('left')} aria-label="Previous Certification">
+                        <FaChevronLeft />
+                    </button>
+                    
+                    {/* Horizontal Scrolling Container */}
+                    <div className="cert-horizontal-scroll" ref={scrollRef}>
+                        {certificationsData.map((cert, index) => (
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0, x: 100, scale: 0.9 }}
+                                whileInView={{ opacity: 1, x: 0, scale: 1 }}
+                                transition={{ delay: index * 0.1, type: 'spring', bounce: 0.4, duration: 0.8 }}
+                                viewport={{ once: true, margin: "-50px" }}
+                                className="cert-card-container"
+                            >
+                                <TiltCard cert={cert} onClick={setSelectedCert} />
+                            </motion.div>
+                        ))}
+                    </div>
+
+                    <button className="cert-scroll-btn next" onClick={() => scroll('right')} aria-label="Next Certification">
+                        <FaChevronRight />
+                    </button>
                 </div>
             </div>
 
