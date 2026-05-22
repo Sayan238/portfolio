@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaCommentDots, FaTimes, FaPaperPlane, FaCog } from 'react-icons/fa';
+import { FaRobot, FaTimes, FaPaperPlane } from 'react-icons/fa';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import '../styles/ChatBot.css';
 
@@ -66,26 +66,18 @@ const getMockResponse = (userMessage) => {
 
 const ChatBot = () => {
     const [isOpen, setIsOpen] = useState(false);
-    const [showSettings, setShowSettings] = useState(false);
     const [input, setInput] = useState('');
     const [messages, setMessages] = useState([
         { sender: 'bot', text: "Hi! I am Sayan's AI Assistant. Ask me anything about his projects, skills, or certifications!" }
     ]);
     const [isLoading, setIsLoading] = useState(false);
 
-    // Form inputs for local storage
-    const [storedGroqKey, setStoredGroqKey] = useState(localStorage.getItem('sayan_groq_key') || '');
-    const [storedGeminiKey, setStoredGeminiKey] = useState(localStorage.getItem('sayan_gemini_key') || '');
-    const [storedGrokKey, setStoredGrokKey] = useState(localStorage.getItem('sayan_grok_key') || '');
-
     const messagesEndRef = useRef(null);
     
-    // API Keys configuration (env files or local storage override)
-    const geminiKey = import.meta.env.VITE_GEMINI_API_KEY || storedGeminiKey;
-    const groqKey = import.meta.env.VITE_GROQ_API_KEY || storedGroqKey;
-    const grokKey = import.meta.env.VITE_GROK_API_KEY || storedGrokKey;
-    
-    const hasApiKey = geminiKey || groqKey || grokKey;
+    // API Keys configuration (env files override, no local storage setup)
+    const geminiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    const groqKey = import.meta.env.VITE_GROQ_API_KEY;
+    const grokKey = import.meta.env.VITE_GROK_API_KEY;
 
     // Auto scroll to bottom when new messages arrive
     useEffect(() => {
@@ -93,16 +85,6 @@ const ChatBot = () => {
             messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [messages, isLoading]);
-
-    // Check if API key is present, if not add system notice once
-    useEffect(() => {
-        if (isOpen && !hasApiKey && messages.length === 1) {
-            setMessages(prev => [
-                ...prev,
-                { sender: 'system', text: "Notice: Bot running in offline mode. Click the gear icon at the top to add your API Key for full dynamic AI response." }
-            ]);
-        }
-    }, [isOpen, hasApiKey]);
 
     const handleSend = async (e) => {
         e.preventDefault();
@@ -257,31 +239,6 @@ const ChatBot = () => {
         }
     };
 
-    const saveSettings = () => {
-        localStorage.setItem('sayan_groq_key', storedGroqKey.trim());
-        localStorage.setItem('sayan_gemini_key', storedGeminiKey.trim());
-        localStorage.setItem('sayan_grok_key', storedGrokKey.trim());
-        setShowSettings(false);
-        setMessages(prev => [
-            ...prev,
-            { sender: 'system', text: "API keys updated! You can start chatting with Sayan.AI now." }
-        ]);
-    };
-
-    const clearSettings = () => {
-        localStorage.removeItem('sayan_groq_key');
-        localStorage.removeItem('sayan_gemini_key');
-        localStorage.removeItem('sayan_grok_key');
-        setStoredGroqKey('');
-        setStoredGeminiKey('');
-        setStoredGrokKey('');
-        setShowSettings(false);
-        setMessages(prev => [
-            ...prev,
-            { sender: 'system', text: "API keys cleared. The bot is running in offline mode." }
-        ]);
-    };
-
     return (
         <>
             {/* Toggle Button */}
@@ -290,125 +247,79 @@ const ChatBot = () => {
                 onClick={() => setIsOpen(!isOpen)}
                 aria-label="Open AI Assistant Chat"
             >
-                {isOpen ? <FaTimes /> : <FaCommentDots />}
+                {isOpen ? <FaTimes /> : <FaRobot />}
             </button>
 
             {/* Chat Widget Panel */}
             <AnimatePresence>
                 {isOpen && (
-                    <motion.div
-                        className="chatbot-container"
-                        initial={{ opacity: 0, y: 100, scale: 0.8 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 100, scale: 0.8 }}
-                        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                    >
-                        {/* Header */}
-                        <div className="chatbot-header">
-                            <h3 className="chatbot-title">Sayan.AI</h3>
-                            <div className="chatbot-header-actions">
-                                <button 
-                                    className={`chatbot-settings-btn ${showSettings ? 'active' : ''}`}
-                                    onClick={() => setShowSettings(!showSettings)} 
-                                    aria-label="AI Settings"
-                                >
-                                    <FaCog />
-                                </button>
+                    <>
+                        {/* Backdrop Blur Overlay */}
+                        <motion.div 
+                            key="chatbot-overlay"
+                            className="chatbot-overlay"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setIsOpen(false)}
+                        />
+                        
+                        <motion.div
+                            key="chatbot-container"
+                            className="chatbot-container"
+                            initial={{ opacity: 0, y: 100, scale: 0.8 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 100, scale: 0.8 }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                        >
+                            {/* Header */}
+                            <div className="chatbot-header">
+                                <h3 className="chatbot-title">Sayan.AI</h3>
                                 <button className="chatbot-close-btn" onClick={() => setIsOpen(false)} aria-label="Close Chat">
                                     <FaTimes />
                                 </button>
                             </div>
-                        </div>
 
-                        {/* Settings Overlay panel */}
-                        <AnimatePresence>
-                            {showSettings && (
-                                <motion.div 
-                                    className="chatbot-settings-panel"
-                                    initial={{ opacity: 0, y: -20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -20 }}
+                            {/* Messages panel */}
+                            <div className="chatbot-messages" data-lenis-prevent>
+                                {messages.map((msg, index) => (
+                                    <div key={index} className={`chatbot-message ${msg.sender}`}>
+                                        {msg.text}
+                                    </div>
+                                ))}
+                                {isLoading && (
+                                    <div className="chatbot-message bot">
+                                        <div className="chatbot-typing">
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                        </div>
+                                    </div>
+                                )}
+                                <div ref={messagesEndRef} />
+                            </div>
+
+                            {/* Input footer form */}
+                            <form className="chatbot-input-form" onSubmit={handleSend}>
+                                <input
+                                    type="text"
+                                    className="chatbot-input"
+                                    value={input}
+                                    onChange={(e) => setInput(e.target.value)}
+                                    placeholder="Ask about Sayan..."
+                                    disabled={isLoading}
+                                />
+                                <button 
+                                    type="submit" 
+                                    className="chatbot-send-btn" 
+                                    disabled={!input.trim() || isLoading}
+                                    aria-label="Send message"
                                 >
-                                    <h4>API Credentials</h4>
-                                    <p className="settings-help">Keys are saved locally in your browser and are never uploaded to any third-party server except the chosen AI endpoint.</p>
-                                    
-                                    <div className="settings-field">
-                                        <label>Groq API Key (Option 2):</label>
-                                        <input 
-                                            type="password" 
-                                            value={storedGroqKey} 
-                                            onChange={(e) => setStoredGroqKey(e.target.value)} 
-                                            placeholder="gsk_..."
-                                        />
-                                    </div>
-                                    
-                                    <div className="settings-field">
-                                        <label>Gemini API Key (Option 1):</label>
-                                        <input 
-                                            type="password" 
-                                            value={storedGeminiKey} 
-                                            onChange={(e) => setStoredGeminiKey(e.target.value)} 
-                                            placeholder="AIzaSy..."
-                                        />
-                                    </div>
-
-                                    <div className="settings-field">
-                                        <label>Grok API Key (Option 3):</label>
-                                        <input 
-                                            type="password" 
-                                            value={storedGrokKey} 
-                                            onChange={(e) => setStoredGrokKey(e.target.value)} 
-                                            placeholder="xai-..."
-                                        />
-                                    </div>
-
-                                    <div className="settings-actions">
-                                        <button onClick={saveSettings} className="settings-save-btn">Save</button>
-                                        <button onClick={clearSettings} className="settings-clear-btn">Clear</button>
-                                    </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-
-                        {/* Messages panel */}
-                        <div className="chatbot-messages">
-                            {messages.map((msg, index) => (
-                                <div key={index} className={`chatbot-message ${msg.sender}`}>
-                                    {msg.text}
-                                </div>
-                            ))}
-                            {isLoading && (
-                                <div className="chatbot-message bot">
-                                    <div className="chatbot-typing">
-                                        <span></span>
-                                        <span></span>
-                                        <span></span>
-                                    </div>
-                                </div>
-                            )}
-                            <div ref={messagesEndRef} />
-                        </div>
-
-                        {/* Input footer form */}
-                        <form className="chatbot-input-form" onSubmit={handleSend}>
-                            <input
-                                type="text"
-                                className="chatbot-input"
-                                value={input}
-                                onChange={(e) => setInput(e.target.value)}
-                                placeholder="Ask about Sayan..."
-                                disabled={isLoading}
-                            />
-                            <button 
-                                type="submit" 
-                                className="chatbot-send-btn" 
-                                disabled={!input.trim() || isLoading}
-                                aria-label="Send message"
-                            >
-                                <FaPaperPlane />
-                            </button>
-                        </form>
-                    </motion.div>
+                                    <FaPaperPlane />
+                                </button>
+                            </form>
+                        </motion.div>
+                    </>
                 )}
             </AnimatePresence>
         </>
