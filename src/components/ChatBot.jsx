@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaCommentDots, FaTimes, FaPaperPlane } from 'react-icons/fa';
+import { FaCommentDots, FaTimes, FaPaperPlane, FaCog } from 'react-icons/fa';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import '../styles/ChatBot.css';
 
@@ -66,18 +66,24 @@ const getMockResponse = (userMessage) => {
 
 const ChatBot = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const [showSettings, setShowSettings] = useState(false);
     const [input, setInput] = useState('');
     const [messages, setMessages] = useState([
         { sender: 'bot', text: "Hi! I am Sayan's AI Assistant. Ask me anything about his projects, skills, or certifications!" }
     ]);
     const [isLoading, setIsLoading] = useState(false);
 
+    // Form inputs for local storage
+    const [storedGroqKey, setStoredGroqKey] = useState(localStorage.getItem('sayan_groq_key') || '');
+    const [storedGeminiKey, setStoredGeminiKey] = useState(localStorage.getItem('sayan_gemini_key') || '');
+    const [storedGrokKey, setStoredGrokKey] = useState(localStorage.getItem('sayan_grok_key') || '');
+
     const messagesEndRef = useRef(null);
     
-    // API Keys configuration
-    const geminiKey = import.meta.env.VITE_GEMINI_API_KEY;
-    const groqKey = import.meta.env.VITE_GROQ_API_KEY;
-    const grokKey = import.meta.env.VITE_GROK_API_KEY;
+    // API Keys configuration (env files or local storage override)
+    const geminiKey = import.meta.env.VITE_GEMINI_API_KEY || storedGeminiKey;
+    const groqKey = import.meta.env.VITE_GROQ_API_KEY || storedGroqKey;
+    const grokKey = import.meta.env.VITE_GROK_API_KEY || storedGrokKey;
     
     const hasApiKey = geminiKey || groqKey || grokKey;
 
@@ -93,10 +99,10 @@ const ChatBot = () => {
         if (isOpen && !hasApiKey && messages.length === 1) {
             setMessages(prev => [
                 ...prev,
-                { sender: 'system', text: "Notice: Bot running in offline mode. Add 'VITE_GROQ_API_KEY' or 'VITE_GEMINI_API_KEY' to enable full dynamic AI." }
+                { sender: 'system', text: "Notice: Bot running in offline mode. Click the gear icon at the top to add your API Key for full dynamic AI response." }
             ]);
         }
-    }, [isOpen]);
+    }, [isOpen, hasApiKey]);
 
     const handleSend = async (e) => {
         e.preventDefault();
@@ -219,6 +225,31 @@ const ChatBot = () => {
         }
     };
 
+    const saveSettings = () => {
+        localStorage.setItem('sayan_groq_key', storedGroqKey.trim());
+        localStorage.setItem('sayan_gemini_key', storedGeminiKey.trim());
+        localStorage.setItem('sayan_grok_key', storedGrokKey.trim());
+        setShowSettings(false);
+        setMessages(prev => [
+            ...prev,
+            { sender: 'system', text: "API keys updated! You can start chatting with Sayan.AI now." }
+        ]);
+    };
+
+    const clearSettings = () => {
+        localStorage.removeItem('sayan_groq_key');
+        localStorage.removeItem('sayan_gemini_key');
+        localStorage.removeItem('sayan_grok_key');
+        setStoredGroqKey('');
+        setStoredGeminiKey('');
+        setStoredGrokKey('');
+        setShowSettings(false);
+        setMessages(prev => [
+            ...prev,
+            { sender: 'system', text: "API keys cleared. The bot is running in offline mode." }
+        ]);
+    };
+
     return (
         <>
             {/* Toggle Button */}
@@ -243,10 +274,69 @@ const ChatBot = () => {
                         {/* Header */}
                         <div className="chatbot-header">
                             <h3 className="chatbot-title">Sayan.AI</h3>
-                            <button className="chatbot-close-btn" onClick={() => setIsOpen(false)} aria-label="Close Chat">
-                                <FaTimes />
-                            </button>
+                            <div className="chatbot-header-actions">
+                                <button 
+                                    className={`chatbot-settings-btn ${showSettings ? 'active' : ''}`}
+                                    onClick={() => setShowSettings(!showSettings)} 
+                                    aria-label="AI Settings"
+                                >
+                                    <FaCog />
+                                </button>
+                                <button className="chatbot-close-btn" onClick={() => setIsOpen(false)} aria-label="Close Chat">
+                                    <FaTimes />
+                                </button>
+                            </div>
                         </div>
+
+                        {/* Settings Overlay panel */}
+                        <AnimatePresence>
+                            {showSettings && (
+                                <motion.div 
+                                    className="chatbot-settings-panel"
+                                    initial={{ opacity: 0, y: -20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -20 }}
+                                >
+                                    <h4>API Credentials</h4>
+                                    <p className="settings-help">Keys are saved locally in your browser and are never uploaded to any third-party server except the chosen AI endpoint.</p>
+                                    
+                                    <div className="settings-field">
+                                        <label>Groq API Key (Option 2):</label>
+                                        <input 
+                                            type="password" 
+                                            value={storedGroqKey} 
+                                            onChange={(e) => setStoredGroqKey(e.target.value)} 
+                                            placeholder="gsk_..."
+                                        />
+                                    </div>
+                                    
+                                    <div className="settings-field">
+                                        <label>Gemini API Key (Option 1):</label>
+                                        <input 
+                                            type="password" 
+                                            value={storedGeminiKey} 
+                                            onChange={(e) => setStoredGeminiKey(e.target.value)} 
+                                            placeholder="AIzaSy..."
+                                        />
+                                    </div>
+
+                                    <div className="settings-field">
+                                        <label>Grok API Key (Option 3):</label>
+                                        <input 
+                                            type="password" 
+                                            value={storedGrokKey} 
+                                            onChange={(e) => setStoredGrokKey(e.target.value)} 
+                                            placeholder="xai-..."
+                                        />
+                                    </div>
+
+                                    <div className="settings-actions">
+                                        <button onClick={saveSettings} className="settings-save-btn">Save</button>
+                                        <button onClick={clearSettings} className="settings-clear-btn">Clear</button>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
 
                         {/* Messages panel */}
                         <div className="chatbot-messages">
