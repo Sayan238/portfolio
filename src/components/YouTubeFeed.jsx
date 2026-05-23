@@ -24,24 +24,20 @@ const videosData = {
     shorts: [
         {
             id: 'Qwi2z2oqsb8',
-            title: 'ESP32 WiFi LED Dashboard Demo',
-            description: 'A quick 60-second walkthrough showcasing the wireless dashboard speed and interface responsiveness.',
-            issuer: 'IoT Showcase',
-            color: 'var(--comic-red)'
-        },
-        {
-            id: 'BnUvZzeB1rXdLRee', // The user gave Hag_2bDEbiM and BnUvZzeB1rXdLRee (the latter from the URL ?si= parameter or direct link. Let's look: the URL was https://youtube.com/shorts/Hag_2bDEbiM?si=BnUvZzeB1rXdLRee, so the ID is Hag_2bDEbiM!)
-            id_real: 'Hag_2bDEbiM',
             title: 'DIY ESP32 Robot Car Demo',
             description: 'Quick demonstration of the remote dashboard steering of the ESP32 robotic chassis.',
             issuer: 'Robotics Demo',
             color: 'var(--comic-blue)'
+        },
+        {
+            id: 'Hag_2bDEbiM',
+            title: 'ESP32 WiFi LED Dashboard Demo',
+            description: 'A quick 60-second walkthrough showcasing the wireless dashboard speed and interface responsiveness.',
+            issuer: 'IoT Showcase',
+            color: 'var(--comic-red)'
         }
     ]
 };
-
-// Fix the actual ID mapping for the second Short
-videosData.shorts[1].id = 'Hag_2bDEbiM';
 
 const YouTubeFeed = () => {
     const [activeTab, setActiveTab] = useState('long');
