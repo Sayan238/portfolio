@@ -9,6 +9,7 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import LogoLoop from './components/LogoLoop';
 import ChatBot from './components/ChatBot';
+import YouTubeFeed from './components/YouTubeFeed';
 import { SiReact, SiNextdotjs, SiTypescript, SiTailwindcss, SiPython, SiCplusplus, SiArduino, SiFramer, SiNodedotjs } from 'react-icons/si';
 import './index.css';
 
@@ -65,6 +66,7 @@ function App() {
         />
       </div>
       <Projects />
+      <YouTubeFeed />
       <Contact />
       <Footer />
       <ChatBot />

@@ -57,6 +57,9 @@ const Navbar = () => {
                         <a href="#projects" className="nav-links" onClick={toggleMenu}>Projects</a>
                     </li>
                     <li className="nav-item">
+                        <a href="#youtube" className="nav-links" onClick={toggleMenu}>YouTube</a>
+                    </li>
+                    <li className="nav-item">
                         <a href="#contact" className="nav-links" onClick={toggleMenu}>Contact</a>
                     </li>
                     <li className="nav-item">
