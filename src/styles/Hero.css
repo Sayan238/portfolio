@@ -257,7 +257,7 @@
     }
 }
 
-@media screen and (max-width: 960px) {
+@media screen and (max-width: 1180px) {
     .hero-content {
         flex-direction: column;
         text-align: center;

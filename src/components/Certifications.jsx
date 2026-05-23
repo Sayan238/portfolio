@@ -117,6 +117,7 @@ const TiltCard = ({ cert, onClick }) => {
 
 const Certifications = () => {
     const [selectedCert, setSelectedCert] = useState(null);
+    const [isHovered, setIsHovered] = useState(false);
     const scrollRef = useRef(null);
 
     const scroll = (direction) => {
@@ -126,6 +127,29 @@ const Certifications = () => {
             scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
         }
     };
+
+    // Auto scroll one by one every 3.5 seconds
+    useEffect(() => {
+        if (selectedCert || isHovered) return;
+
+        const handleAutoScroll = () => {
+            if (scrollRef.current) {
+                const container = scrollRef.current;
+                const cardWidth = 320 + 40; // width + gap
+                const maxScrollLeft = container.scrollWidth - container.clientWidth;
+                
+                // If we are at the end (with a margin of 10px), wrap back to start
+                if (container.scrollLeft >= maxScrollLeft - 10) {
+                    container.scrollTo({ left: 0, behavior: 'smooth' });
+                } else {
+                    container.scrollBy({ left: cardWidth, behavior: 'smooth' });
+                }
+            }
+        };
+
+        const interval = setInterval(handleAutoScroll, 3500);
+        return () => clearInterval(interval);
+    }, [selectedCert, isHovered]);
 
     // Prevent body scroll when modal is open
     useEffect(() => {
@@ -158,7 +182,11 @@ const Certifications = () => {
                     </motion.h2>
                 </div>
 
-                <div className="cert-carousel-wrapper">
+                <div 
+                    className="cert-carousel-wrapper"
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                >
                     <button className="cert-scroll-btn prev" onClick={() => scroll('left')} aria-label="Previous Certification">
                         <FaChevronLeft />
                     </button>
